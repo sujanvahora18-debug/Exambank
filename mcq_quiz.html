@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCQ Bank – Mobile Computing & Wireless Communication</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --danger: #ef4444;
+    --text: #e8edf5;
+    --muted: #6b7a96;
+    --border: #1e2d45;
+    --correct: #10b981;
+    --wrong: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse 60% 40% at 70% 10%, rgba(0,212,255,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 10% 80%, rgba(124,58,237,0.07) 0%, transparent 60%);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+
+  /* ── Header ── */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    background: rgba(0,212,255,0.06);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(24px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .filter-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-val.green { color: var(--correct); }
+  .stat-val.red { color: var(--wrong); }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    margin-bottom: 28px;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 8px;
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Question card ── */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .q-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .q-topic {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .q-diff {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 10px;
+    border-radius: 10px;
+    border: 1px solid;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: auto;
+  }
+
+  .q-diff.easy { color: var(--correct); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08); }
+  .q-diff.medium { color: #f59e0b; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+  .q-diff.hard { color: var(--danger); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
+
+  .question-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    color: #d1daf0;
+  }
+
+  /* ── Options ── */
+  .options {
+    display: grid;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: left;
+    color: var(--text);
+    width: 100%;
+  }
+
+  .option:hover:not(.disabled) {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.06);
+    transform: translateX(4px);
+  }
+
+  .option-letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 6px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+
+  .option.correct {
+    border-color: var(--correct);
+    background: rgba(16,185,129,0.1);
+    color: #6ee7b7;
+  }
+
+  .option.correct .option-letter {
+    background: var(--correct);
+    color: #fff;
+  }
+
+  .option.wrong {
+    border-color: var(--wrong);
+    background: rgba(239,68,68,0.1);
+    color: #fca5a5;
+  }
+
+  .option.wrong .option-letter {
+    background: var(--wrong);
+    color: #fff;
+  }
+
+  .option.disabled { cursor: default; pointer-events: none; }
+
+  .option.dimmed { opacity: 0.35; }
+
+  /* ── Explanation ── */
+  .explanation {
+    display: none;
+    margin-top: 16px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: rgba(0,212,255,0.05);
+    border: 1px solid rgba(0,212,255,0.15);
+    font-size: 14px;
+    color: #a8b8d0;
+    line-height: 1.6;
+  }
+
+  .explanation.show { display: block; }
+
+  .explanation strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── Buttons ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,255,0.25); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Result screen ── */
+  #result-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .result-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 4px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    box-shadow: 0 0 40px rgba(0,212,255,0.15);
+  }
+
+  .result-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .result-total { font-size: 14px; color: var(--muted); }
+
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .result-msg { color: var(--muted); margin-bottom: 32px; font-size: 15px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .question-card { padding: 20px; }
+    .btn { padding: 10px 20px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">📡 AIT 323 · MCWC · Android</div>
+    <h1>MCQ Exam Bank</h1>
+    <p class="subtitle">Mobile Computing · Wireless Communication · Android · Lenses & Mirrors</p>
+  </header>
+
+  <!-- Quiz screen -->
+  <div id="quiz-screen">
+
+    <!-- Filter -->
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all')">All Topics</button>
+      <button class="filter-btn" onclick="setFilter('Mobile Computing')">Mobile Computing</button>
+      <button class="filter-btn" onclick="setFilter('Wireless Comm')">Wireless Comm</button>
+      <button class="filter-btn" onclick="setFilter('1G-5G')">1G – 5G</button>
+      <button class="filter-btn" onclick="setFilter('Android')">Android</button>
+      <button class="filter-btn" onclick="setFilter('Lenses & Mirrors')">Lenses</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-val" id="s-total">0</span><span class="stat-label">Total</span></div>
+      <div class="stat"><span class="stat-val green" id="s-correct">0</span><span class="stat-label">Correct</span></div>
+      <div class="stat"><span class="stat-val red" id="s-wrong">0</span><span class="stat-label">Wrong</span></div>
+      <div class="stat"><span class="stat-val" id="s-score">0%</span><span class="stat-label">Score</span></div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="prog-text">Question 1 of 0</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <!-- Question card -->
+    <div class="question-card" id="question-card">
+      <div class="q-meta">
+        <span class="q-num" id="q-num">Q1</span>
+        <span class="q-topic" id="q-topic">Topic</span>
+        <span class="q-diff" id="q-diff">Easy</span>
+      </div>
+      <p class="question-text" id="q-text">Loading...</p>
+      <div class="options" id="options-container"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="prevQ()">← Previous</button>
+      <button class="btn btn-primary" onclick="nextQ()" id="next-btn">Next →</button>
+      <button class="btn btn-secondary" onclick="showResult()">Finish Quiz</button>
+    </div>
+
+  </div>
+
+  <!-- Result screen -->
+  <div id="result-screen">
+    <div class="result-circle">
+      <div class="result-score" id="r-score">0</div>
+      <div class="result-total" id="r-total">/ 0</div>
+    </div>
+    <div class="result-title" id="r-title">Well Done!</div>
+    <div class="result-msg" id="r-msg">Here's how you did</div>
+    <div class="stats-bar" style="max-width:400px;margin:0 auto 28px;">
+      <div class="stat"><span class="stat-val green" id="r-correct">0</span><span class="stat-label">Correct</span></div>
+      <div class="stat"><span class="stat-val red" id="r-wrong">0</span><span class="stat-label">Wrong</span></div>
+      <div class="stat"><span class="stat-val" id="r-skip">0</span><span class="stat-label">Skipped</span></div>
+      <div class="stat"><span class="stat-val" id="r-pct">0%</span><span class="stat-label">Score</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="restartQuiz()">🔄 Restart Quiz</button>
+      <button class="btn btn-secondary" onclick="reviewAnswers()">📋 Review Answers</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  // ── MOBILE COMPUTING ──
+  {
+    topic: "Mobile Computing", diff: "easy",
+    q: "What does 'mobile computing' allow users to do?",
+    opts: ["Use only wired devices for data access", "Perform tasks anytime, anywhere using wireless devices", "Connect exclusively to fixed physical links", "Use only voice communication"],
+    ans: 1, exp: "Mobile computing is a technology that allows transmission of data, voice, and video via a computer or wireless device <strong>without being connected to a fixed physical link</strong>."
+  },
+  {
+    topic: "Mobile Computing", diff: "easy",
+    q: "Which term describes computing where the system is 'present everywhere'?",
+    opts: ["Nomadic computing", "Pervasive computing", "Ubiquitous computing", "Adaptive computing"],
+    ans: 2, exp: "<strong>Ubiquitous</strong> means 'present everywhere' — allowing users to perform computation from anywhere at any time. Pervasive also means widespread, while Nomadic means moving with the user."
+  },
+  {
+    topic: "Mobile Computing", diff: "easy",
+    q: "Compared to a wired network, a mobile network has:",
+    opts: ["Higher bandwidth and lower delay", "Lower bandwidth and higher delay", "Fixed speed and low variation", "High power requirements"],
+    ans: 1, exp: "Mobile networks have <strong>lower bandwidth, higher delay, and high bandwidth variation</strong> compared to wired networks. Wired networks offer high, stable bandwidth with low delay."
+  },
+  {
+    topic: "Mobile Computing", diff: "medium",
+    q: "In mobile computing's 3-tier architecture, which tier handles 'logical decision making'?",
+    opts: ["Tier-1: Presentation", "Tier-2: Application", "Tier-3: Data", "Tier-0: Gateway"],
+    ans: 1, exp: "<strong>Tier-2 (Application tier)</strong> handles logical decision making and processing of user input. Tier-1 is the UI (front end), and Tier-3 is data storage (back end)."
+  },
+  {
+    topic: "Mobile Computing", diff: "medium",
+    q: "Which characteristic of mobile computing allows it to track the current location of a handheld device?",
+    opts: ["Ubiquity", "Adaptability", "Location awareness", "Personalization"],
+    ans: 2, exp: "<strong>Location awareness</strong> refers to the ability to track the current location of a handheld device — often using GPS or cell tower information."
+  },
+  {
+    topic: "Mobile Computing", diff: "medium",
+    q: "What is the primary security solution for mobile networks since a firewall cannot be simply implemented?",
+    opts: ["Using strong passwords", "Encrypting the signals", "Reducing bandwidth", "Disabling wireless features"],
+    ans: 1, exp: "In mobile networks, unlike single-computer networks where a firewall can be implanted, the solution is to <strong>encrypt the signals</strong> to secure communication."
+  },
+  {
+    topic: "Mobile Computing", diff: "medium",
+    q: "The 5 logical segments of mobile computing include all EXCEPT:",
+    opts: ["User with device", "Network", "Gateway", "Satellite"],
+    ans: 3, exp: "The 5 segments are: <strong>User with device, Network, Gateway, Middleware, and Content</strong>. Satellite is not one of the five segments."
+  },
+  {
+    topic: "Mobile Computing", diff: "hard",
+    q: "Which property of mobile computing refers to the system's ability to 'adjust bandwidth fluctuation without user inconvenience'?",
+    opts: ["Broadcast", "Personalization", "Adaptation", "Location awareness"],
+    ans: 2, exp: "<strong>Adaptation</strong> is the characteristic that adjusts to bandwidth fluctuation without causing inconvenience to the user — essential in mobile environments where bandwidth varies widely."
+  },
+  {
+    topic: "Mobile Computing", diff: "easy",
+    q: "GSM stands for:",
+    opts: ["Global System for Mobile Communications", "General Standard for Mobiles", "Global Signal Management", "Generic System for Mobiles"],
+    ans: 0, exp: "<strong>GSM – Global System for Mobile Communications</strong>, introduced in 1992, is a digital cellular technology for transmitting mobile voice and data."
+  },
+  {
+    topic: "Mobile Computing", diff: "medium",
+    q: "GPRS (General Packet Radio Service) belongs to which mobile generation?",
+    opts: ["1G", "2G", "2.5G (intermediate)", "3G"],
+    ans: 2, exp: "<strong>GPRS is 2.5G</strong> — an intermediate step between 2G (GSM) and 3G, introduced in the late 1990s. It introduced packet switching and enabled web/email access."
+  },
+
+  // ── WIRELESS COMMUNICATION ──
+  {
+    topic: "Wireless Comm", diff: "easy",
+    q: "Electromagnetic signals can be expressed as a function of:",
+    opts: ["Only time", "Only frequency", "Both time and frequency", "Neither time nor frequency"],
+    ans: 2, exp: "Electromagnetic signals used to transmit information can be expressed as a <strong>function of time</strong> or as a <strong>function of frequency</strong>."
+  },
+  {
+    topic: "Wireless Comm", diff: "easy",
+    q: "An analog signal is best described as:",
+    opts: ["A signal with constant level for periods of time", "A signal that varies smoothly and continuously over time", "A signal with only two voltage levels", "A purely digital representation"],
+    ans: 1, exp: "An <strong>analog signal</strong> has signal intensity that varies in a smooth, continuous fashion over time with no breaks or discontinuities."
+  },
+  {
+    topic: "Wireless Comm", diff: "easy",
+    q: "If a signal has a period of 2 microseconds, what is its frequency?",
+    opts: ["200 kHz", "500 kHz", "2 MHz", "0.5 MHz"],
+    ans: 1, exp: "Frequency = 1 / Period = 1 / (2 × 10⁻⁶) = <strong>500 kHz</strong>. This is a direct application of the formula f = 1/T."
+  },
+  {
+    topic: "Wireless Comm", diff: "medium",
+    q: "The 'absolute bandwidth' of a signal refers to:",
+    opts: ["The most effective frequency range", "The width of the entire frequency spectrum of the signal", "The maximum data rate achievable", "The signal-to-noise ratio at the receiver"],
+    ans: 1, exp: "<strong>Absolute bandwidth</strong> is the width of the entire spectrum a signal contains. 'Effective bandwidth' is the narrower band that contains most of the signal's energy."
+  },
+  {
+    topic: "Wireless Comm", diff: "medium",
+    q: "A radio wave at 100 MHz travels at 3×10⁸ m/s. What is its wavelength?",
+    opts: ["30 m", "0.3 m", "3 m", "300 m"],
+    ans: 2, exp: "λ = c / f = (3×10⁸) / (100×10⁶) = <strong>3 meters</strong>. Wavelength is inversely proportional to frequency."
+  },
+  {
+    topic: "Wireless Comm", diff: "medium",
+    q: "The Nyquist formula for maximum bit rate of a noiseless channel (binary signal) is:",
+    opts: ["C = B log₂ M", "C = 2B", "C = B log₂(1 + SNR)", "C = 2B log₂ M"],
+    ans: 1, exp: "For a <strong>binary signal</strong> (two levels), Nyquist's formula is <strong>C = 2B</strong>, where B is the bandwidth. For multilevel signals, C = 2B log₂M."
+  },
+  {
+    topic: "Wireless Comm", diff: "medium",
+    q: "If bandwidth is 3100 Hz and the signal has 8 voltage levels, what is the Nyquist channel capacity?",
+    opts: ["6200 bps", "9300 bps", "18600 bps", "24800 bps"],
+    ans: 2, exp: "C = 2B log₂M = 2 × 3100 × log₂8 = 2 × 3100 × 3 = <strong>18,600 bps</strong>. log₂8 = 3 since 2³ = 8."
+  },
+  {
+    topic: "Wireless Comm", diff: "hard",
+    q: "Shannon's capacity formula for a noisy channel is C = B log₂(1 + SNR). If B = 1 MHz and SNR = 63, what is the capacity?",
+    opts: ["3 Mbps", "6 Mbps", "12 Mbps", "63 Mbps"],
+    ans: 1, exp: "C = B × log₂(1 + SNR) = 1 MHz × log₂(64) = 1 × 6 = <strong>6 Mbps</strong>. Since log₂64 = 6 (2⁶ = 64)."
+  },
+  {
+    topic: "Wireless Comm", diff: "hard",
+    q: "A channel has SNR = 30 dB and B = 2.7 kHz. Using Shannon's formula, the approximate maximum capacity is:",
+    opts: ["~5.4 Kbps", "~27 Kbps", "~54 Kbps", "~270 Kbps"],
+    ans: 1, exp: "30 dB → SNR = 10³ = 1000. C = 2700 × log₂(1001) ≈ 2700 × 9.97 ≈ <strong>27 Kbps</strong>."
+  },
+  {
+    topic: "Wireless Comm", diff: "medium",
+    q: "SNR stands for Signal-to-Noise Ratio. A HIGH SNR means:",
+    opts: ["A low-quality signal with many repeaters needed", "A high-quality signal with fewer repeaters needed", "Equal power in signal and noise", "Maximum possible noise in the channel"],
+    ans: 1, exp: "A <strong>high SNR</strong> means the signal power is much greater than noise power, resulting in a high-quality signal. It sets an upper bound on achievable data rate and reduces the need for repeaters."
+  },
+  {
+    topic: "Wireless Comm", diff: "easy",
+    q: "Which multiplexing method is used in 1G mobile systems?",
+    opts: ["TDMA", "CDMA", "FDMA", "OFDMA"],
+    ans: 2, exp: "1G systems used <strong>FDMA (Frequency Division Multiple Access)</strong>. 2G introduced TDMA/CDMA, 4G uses OFDMA, and 5G uses Massive MIMO and beamforming."
+  },
+  {
+    topic: "Wireless Comm", diff: "medium",
+    q: "Decibel (dB) is used to express power ratios using which scale?",
+    opts: ["Linear scale", "Exponential scale", "Logarithmic scale", "Quadratic scale"],
+    ans: 2, exp: "Decibel is a <strong>logarithmic unit</strong> that expresses the ratio of two power levels. It allows very large or small numbers to be represented concisely."
+  },
+
+  // ── 1G–5G ──
+  {
+    topic: "1G-5G", diff: "easy",
+    q: "Which generation of mobile networks was analog and supported voice calls only?",
+    opts: ["2G", "1G", "3G", "0G"],
+    ans: 1, exp: "<strong>1G (First Generation)</strong> was analog and supported voice calls only. Example: AMPS (Advanced Mobile Phone System), introduced in the 1980s."
+  },
+  {
+    topic: "1G-5G", diff: "easy",
+    q: "What is the full form of LTE in 4G networks?",
+    opts: ["Long Term Evolution", "Low Transmission Energy", "Large Throughput Extension", "Latency Time Enhancement"],
+    ans: 0, exp: "<strong>LTE – Long Term Evolution</strong> is the standard technology used in 4G networks, offering data speeds of 100 Mbps+ and supporting HD video and VoIP."
+  },
+  {
+    topic: "1G-5G", diff: "easy",
+    q: "Which generation introduced SMS (text messaging) alongside digital voice?",
+    opts: ["1G", "2G (GSM)", "3G", "4G"],
+    ans: 1, exp: "<strong>2G (GSM)</strong> introduced digital voice and SMS. It used TDMA/CDMA multiple access with speeds up to 64 kbps."
+  },
+  {
+    topic: "1G-5G", diff: "medium",
+    q: "What switching technique did GPRS (2.5G) introduce compared to 2G?",
+    opts: ["Circuit switching", "Message switching", "Packet switching", "Cell switching"],
+    ans: 2, exp: "GPRS introduced <strong>packet switching</strong>, replacing the circuit switching of 2G/1G. This enabled efficient internet data services like web browsing and email."
+  },
+  {
+    topic: "1G-5G", diff: "medium",
+    q: "Which multiple access technology is used in 5G networks?",
+    opts: ["FDMA", "TDMA", "CDMA", "Massive MIMO and Beamforming"],
+    ans: 3, exp: "<strong>5G uses Massive MIMO (Multiple Input Multiple Output) and Beamforming</strong>, allowing simultaneous connection of many devices with ultra-high speeds up to 1 Gbps."
+  },
+  {
+    topic: "1G-5G", diff: "medium",
+    q: "What data speed does 3G support?",
+    opts: ["Up to 64 kbps", "~56–114 kbps", "144 kbps – 2 Mbps", "100 Mbps+"],
+    ans: 2, exp: "<strong>3G supports 144 kbps to 2 Mbps</strong>. It enabled multimedia services like audio/video streaming and mobile internet browsing."
+  },
+  {
+    topic: "1G-5G", diff: "hard",
+    q: "In the context of 5G, what does IoT stand for and what does 5G enable for it?",
+    opts: ["Internet of Technology — faster phones", "Internet of Things — ultra-fast, low-latency smart connectivity", "Integration of Towers — better coverage", "Internet of Traffic — vehicle communication"],
+    ans: 1, exp: "<strong>IoT (Internet of Things)</strong> refers to smart connected devices. 5G enables ultra-fast, low-latency connectivity for massive IoT deployments, AR/VR, and smart city applications."
+  },
+  {
+    topic: "1G-5G", diff: "easy",
+    q: "AMPS stands for:",
+    opts: ["Advanced Mobile Phone System", "Analog Mobile Protocol Standard", "Automatic Mobile Phone Service", "Applied Mobile Power System"],
+    ans: 0, exp: "<strong>AMPS – Advanced Mobile Phone System</strong> was the 1G analog mobile standard introduced in the 1980s in the United States."
+  },
+
+  // ── ANDROID ──
+  {
+    topic: "Android", diff: "easy",
+    q: "What is an Android Service?",
+    opts: ["A visual user interface component", "A component that performs long-running background operations without a UI", "A database management tool", "A layout manager for activities"],
+    ans: 1, exp: "An Android <strong>Service</strong> is a component that performs long-running operations in the background <strong>without a user interface</strong>, running independently of other components."
+  },
+  {
+    topic: "Android", diff: "easy",
+    q: "Which type of Android service requires a persistent notification?",
+    opts: ["Background Service", "Bound Service", "Foreground Service", "Intent Service"],
+    ans: 2, exp: "A <strong>Foreground Service</strong> is visible to the user and requires a persistent notification (e.g., music player). It must call startForeground() within 5 seconds of starting."
+  },
+  {
+    topic: "Android", diff: "medium",
+    q: "What happens if a Service performs intensive tasks on the main thread?",
+    opts: ["It becomes a Foreground Service automatically", "It causes ANR (Application Not Responding) errors", "It switches to background automatically", "It gains higher priority"],
+    ans: 1, exp: "By default, services run on the main thread. Performing intensive tasks causes <strong>ANR (Application Not Responding)</strong> errors. Use IntentService or manage threads manually to avoid this."
+  },
+  {
+    topic: "Android", diff: "medium",
+    q: "Which lifecycle method of a Service is called each time startService() is used?",
+    opts: ["onCreate()", "onBind()", "onStartCommand()", "onResume()"],
+    ans: 2, exp: "<strong>onStartCommand(Intent, int, int)</strong> is called each time startService() is invoked. onCreate() is called only when the service is first created."
+  },
+  {
+    topic: "Android", diff: "medium",
+    q: "To bind an application component to a Service, which method is used?",
+    opts: ["startService()", "connectService()", "bindService()", "attachService()"],
+    ans: 2, exp: "<strong>bindService()</strong> is used to bind an application component (like an Activity) to a Service. A Bound Service runs only as long as at least one component is bound to it."
+  },
+  {
+    topic: "Android", diff: "hard",
+    q: "What can a Background Service (not Foreground) be subject to under memory pressure?",
+    opts: ["Automatic upgrade to Foreground", "Being killed by the system", "Running with higher CPU priority", "Displaying notifications automatically"],
+    ans: 1, exp: "Background Services <strong>may be killed by the system under memory pressure</strong> since they have no persistent notification or elevated priority. They should release resources when not needed."
+  },
+  {
+    topic: "Android", diff: "easy",
+    q: "Which type of Android Service performs scheduled data sync in the background without user interaction?",
+    opts: ["Foreground Service", "Background Service", "Unbound Service", "Intent Service"],
+    ans: 1, exp: "A <strong>Background Service</strong> handles tasks like scheduled data sync or storing data without notifying the user or requiring any user interaction."
+  },
+
+  // ── LENSES & MIRRORS ──
+  {
+    topic: "Lenses & Mirrors", diff: "easy",
+    q: "If the radius of curvature of a spherical mirror is 20 cm, what is its focal length?",
+    opts: ["5 cm", "10 cm", "20 cm", "40 cm"],
+    ans: 1, exp: "Focal length = R/2 = 20/2 = <strong>10 cm</strong>. The focal length is always half the radius of curvature for a spherical mirror."
+  },
+  {
+    topic: "Lenses & Mirrors", diff: "easy",
+    q: "Which type of mirror can produce an erect and enlarged image of an object?",
+    opts: ["Convex mirror", "Plane mirror", "Concave mirror", "Parabolic convex mirror"],
+    ans: 2, exp: "A <strong>Concave mirror</strong> can produce an erect (upright) and enlarged (magnified) image when the object is placed between the pole and the focus."
+  },
+  {
+    topic: "Lenses & Mirrors", diff: "medium",
+    q: "A concave mirror produces a 3× magnified real image of an object at 10 cm. Where is the image located?",
+    opts: ["+30 cm (in front)", "−30 cm (behind)", "−10 cm", "+10 cm"],
+    ans: 0, exp: "m = -v/u → -3 = -v/(-10) → v = -30 cm. The image is at <strong>30 cm in front of the mirror</strong> (real images form in front of concave mirrors)."
+  },
+  {
+    topic: "Lenses & Mirrors", diff: "easy",
+    q: "What does the refractive index of a medium measure?",
+    opts: ["How fast light travels in a vacuum", "How much light slows down when entering the medium from a vacuum", "The color of light passing through", "The angle of incidence of light"],
+    ans: 1, exp: "The <strong>refractive index</strong> is a measure of how much light slows down when it enters a medium from a vacuum. Higher refractive index = slower light speed in that medium."
+  },
+  {
+    topic: "Lenses & Mirrors", diff: "medium",
+    q: "What aperture setting gives the shallowest depth of field (most blurred background)?",
+    opts: ["f/22", "f/11", "f/8", "f/2.8"],
+    ans: 3, exp: "<strong>f/2.8</strong> (large aperture) gives a very thin (shallow) depth of field, resulting in a blurred background (bokeh). f/22 gives a very large depth of field with most things in focus."
+  },
+  {
+    topic: "Lenses & Mirrors", diff: "easy",
+    q: "Which photoreceptors in the eye are responsible for color vision?",
+    opts: ["Rods", "Cones", "Rhodopsin", "Fovea cells"],
+    ans: 1, exp: "<strong>Cones</strong> are responsible for color vision and fine detail. There are about 6 million cones, concentrated in the fovea. Rods (120 million) handle low-light and peripheral vision."
+  },
+  {
+    topic: "Lenses & Mirrors", diff: "hard",
+    q: "Find the focal length of a convex mirror whose radius of curvature is 32 cm.",
+    opts: ["+8 cm", "−16 cm", "+16 cm", "−32 cm"],
+    ans: 2, exp: "For a convex mirror, f = R/2 = +32/2 = <strong>+16 cm</strong>. The positive sign indicates a convex mirror, which always has a virtual focus behind the mirror surface."
+  }
+];
+
+let filtered = [...ALL_QUESTIONS];
+let current = 0;
+let answers = {};
+let currentFilter = 'all';
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  filtered = f === 'all' ? [...ALL_QUESTIONS] : ALL_QUESTIONS.filter(q => q.topic === f);
+  current = 0;
+  answers = {};
+  updateStats();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if (filtered.length === 0) return;
+  const q = filtered[current];
+  document.getElementById('q-num').textContent = `Q${current + 1}`;
+  document.getElementById('q-topic').textContent = q.topic;
+  const diffEl = document.getElementById('q-diff');
+  diffEl.textContent = q.diff.charAt(0).toUpperCase() + q.diff.slice(1);
+  diffEl.className = `q-diff ${q.diff}`;
+  document.getElementById('q-text').textContent = q.q;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  const answered = answers[current] !== undefined;
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    if (answered) {
+      btn.classList.add('disabled');
+      if (i === q.ans) btn.classList.add('correct');
+      else if (i === answers[current]) btn.classList.add('wrong');
+      else btn.classList.add('dimmed');
+    }
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    container.appendChild(btn);
+  });
+
+  const expEl = document.getElementById('explanation');
+  if (answered) {
+    expEl.innerHTML = `<strong>💡 Explanation:</strong> ${q.exp}`;
+    expEl.classList.add('show');
+  } else {
+    expEl.classList.remove('show');
+  }
+
+  // progress
+  const pct = Math.round((current + 1) / filtered.length * 100);
+  document.getElementById('prog-text').textContent = `Question ${current + 1} of ${filtered.length}`;
+  document.getElementById('prog-pct').textContent = `${pct}%`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+function selectAnswer(i) {
+  if (answers[current] !== undefined) return;
+  answers[current] = i;
+  updateStats();
+  renderQuestion();
+}
+
+function updateStats() {
+  const total = Object.keys(answers).length;
+  let correct = 0, wrong = 0;
+  Object.entries(answers).forEach(([idx, ans]) => {
+    if (filtered[idx] && ans === filtered[idx].ans) correct++;
+    else wrong++;
+  });
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-correct').textContent = correct;
+  document.getElementById('s-wrong').textContent = wrong;
+  const score = total > 0 ? Math.round(correct / total * 100) : 0;
+  document.getElementById('s-score').textContent = score + '%';
+}
+
+function nextQ() {
+  if (current < filtered.length - 1) { current++; renderQuestion(); }
+  else showResult();
+}
+
+function prevQ() {
+  if (current > 0) { current--; renderQuestion(); }
+}
+
+function showResult() {
+  let correct = 0, wrong = 0, skipped = 0;
+  filtered.forEach((q, i) => {
+    if (answers[i] === undefined) skipped++;
+    else if (answers[i] === q.ans) correct++;
+    else wrong++;
+  });
+  const total = filtered.length;
+  const pct = Math.round(correct / total * 100);
+
+  document.getElementById('r-score').textContent = correct;
+  document.getElementById('r-total').textContent = `/ ${total}`;
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent = wrong;
+  document.getElementById('r-skip').textContent = skipped;
+  document.getElementById('r-pct').textContent = pct + '%';
+
+  let title, msg;
+  if (pct >= 90) { title = '🏆 Excellent!'; msg = 'Outstanding performance! You\'re exam-ready!'; }
+  else if (pct >= 75) { title = '🎯 Great Job!'; msg = 'Strong understanding. Review a few more topics!'; }
+  else if (pct >= 60) { title = '📚 Keep Going!'; msg = 'Good effort. A bit more practice and you\'ll pass easily.'; }
+  else { title = '💪 Keep Studying!'; msg = 'Review the material and try again — you\'ll improve!'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent = msg;
+
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+}
+
+function restartQuiz() {
+  current = 0;
+  answers = {};
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+  updateStats();
+  renderQuestion();
+}
+
+function reviewAnswers() {
+  current = 0;
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+  renderQuestion();
+}
+
+// Init
+renderQuestion();
+updateStats();
+</script>
+</body>
+</html>
